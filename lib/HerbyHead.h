@@ -70,7 +70,8 @@ class HerbyHead
 		bool checkTemperature();
 
 		bool pour();
-		bool drillTo();
+		void setDrillTarget(int drillPos);
+		bool drillToTarget();
 		void toggleLight();
 		void resetValues();
 };

@@ -226,7 +226,7 @@ void Herby::update() {
 			_state = SENDING_DATA;
 			break;
 		case SENDING_DATA:
-			if( sendData()) _state = IDLE;
+			if( !sendData()) _state = IDLE;
 			break;
 	}
 }

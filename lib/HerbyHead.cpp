@@ -30,6 +30,8 @@ void HerbyHead::runStepper() {
 	_stepper->runSpeedToPosition();
 }
 
+
+
 HerbyHead& HerbyHead::createWaterPump(int pin) {
 	_pinWaterPump = pin;
 
@@ -127,8 +129,16 @@ bool HerbyHead::pour() {
 	return true;
 }
 
-bool HerbyHead::drillTo() {
-	return false;
+void HerbyHead::setDrillTarget(int drillPos){
+	// Set up HeadStepper
+	unsigned long newDrillPos = map(drillPos, 0, HEAD_STEPPER_GRID_STEPS, 0, HEAD_STEPPER_MAX_STEPS);
+	_stepper->moveTo(newDrillPos);
+	_stepper->setSpeed(HEAD_STEPPER_SPEED);
+}
+
+bool HerbyHead::drillToTarget() {
+	if( _stepper->distanceToGo() == 0) return false;
+	return true;
 }
 
 void HerbyHead::toggleLight() {
@@ -157,14 +167,21 @@ bool HerbyHead::doWork() {
 			_state = HUMIDITY_CHECK;
 			break;
 		case HUMIDITY_CHECK:
-			if (!checkHumidity()) _state = POUR;
+			if (!checkHumidity()) _state = DRILL_IN;
+			setDrillTarget(3);
+			break;
+		case DRILL_IN:
+			if(!drillToTarget()) _state = POUR;
 			break;
 		case POUR:
 			if (!pour()) _state = DRILL_OUT;
+			setDrillTarget(0);
 			break;
 		case DRILL_OUT:
-			_finished = true;
-			_state = IDLE;
+			if(!drillToTarget()){
+				_finished = true;
+				_state = IDLE;
+			}
 			break;
 		default:
 			break;
