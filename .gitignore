@@ -3,6 +3,7 @@
 
 ## Eclipse
 *.pydevproject
+.project
 .metadata
 .gradle
 bin/
