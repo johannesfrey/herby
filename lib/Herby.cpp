@@ -98,6 +98,7 @@ void Herby::activateTimer1() {
 	TCCR1B = bit(WGM12) | bit(CS12);
 	OCR1A = 1;
 	TIMSK1 = bit(OCIE1A);
+
 }
 
 void Herby::runStepper() {
@@ -179,8 +180,10 @@ void Herby::setGridTargetAuto() {
 	}
 }
 
-void Herby::sendData() {
-//	TODO
+bool Herby::sendData() {
+		_parser->insert(_stateData);
+		bool transmissionSucess = _parser->send(I2C_MASTER_ADDRESS);
+		return transmissionSucess;
 }
 
 void Herby::collectData() {
@@ -223,7 +226,7 @@ void Herby::update() {
 			_state = SENDING_DATA;
 			break;
 		case SENDING_DATA:
-			_state = IDLE;
+			if( sendData()) _state = IDLE;
 			break;
 	}
 }

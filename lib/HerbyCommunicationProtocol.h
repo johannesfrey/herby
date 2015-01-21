@@ -13,7 +13,6 @@
 // START AND END PATTERNS
 
 #define START_PATTERN			0xc5
-#define END_PATTERN				0x5c
 
 //// COMMANDS
 // Movement from 0x10 to 0x1F;

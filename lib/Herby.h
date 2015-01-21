@@ -44,7 +44,7 @@ class Herby
 	  void setGridTargetAuto();
 	  bool runAxisMotors();
 
-	  void sendData();
+	  bool sendData();
 	  static void receiveData(int howMany);
 
 	  byte _masterAddress;

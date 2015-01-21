@@ -32,6 +32,7 @@ void setup() {
 		 .initI2C(I2C_MASTER_ADDRESS, I2C_OWN_ADDRESS)
 		 .addHead(&herbyHead)
 		 .begin();
+
 }
 
 void loop() {

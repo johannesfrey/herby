@@ -23,16 +23,13 @@ bool HerbyProtocolParser::validate() {
 	if  (startByte != START_PATTERN) return false;
 
 	uint8_t length = _receiveBuffer[1];
+	uint8_t parityCheck = _receiveBuffer[0];
 
-	if (_receiveBuffer[length - 1] != END_PATTERN) return false;
-
-	uint8_t parity;
-
-	for (int i = 2; i < length; i++) {
-		parity ^= _receiveBuffer[i];
+	for (int i = 1; i < length-1; i++) {
+		parityCheck ^= _receiveBuffer[i];
 	}
 
-	if (parity != _receiveBuffer[length - 2]) return false;
+	if (parityCheck != _receiveBuffer[length - 1]) return false;
 
 	return true;
 }
@@ -101,8 +98,14 @@ void HerbyProtocolParser::insert(stateData& stateData) {
 	int length = cmdCounter + 3;			// last three static bytes in protocol
 
 	_sendBuffer[1] = length;
-	_sendBuffer[length - 1] = END_PATTERN;
+	_sendBuffer[length - 2] = 0x00;			// future use
 	_sendBuffer[length - 3] = 0x00;			// future use
+
+	uint8_t parity = _sendBuffer[0];
+	for (int i = 1; i<length-1; i++){
+		parity ^= _sendBuffer[i];
+	}
+	_sendBuffer[length-1] = parity;
 
 }
 
@@ -110,6 +113,16 @@ void HerbyProtocolParser::addCommandToSendBuffer(int pos, uint8_t cmd, uint8_t d
 	_sendBuffer[pos] = cmd;
 	_sendBuffer[pos + 1] = dataLowByte;
 	_sendBuffer[pos + 2] = dataHighByte;
+}
+
+bool HerbyProtocolParser::send(byte adress){
+
+		Wire.beginTransmission(adress);
+		Wire.write(_sendBuffer, sizeof _sendBuffer);
+		if (Wire.endTransmission() == 0) return true;
+
+		return false;
+
 }
 
 
