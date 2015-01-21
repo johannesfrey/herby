@@ -13,7 +13,7 @@ HerbyHead::HerbyHead() :
 	_temperaturePeriod(DEFAULT_TEMPERATURE_PERIOD), _pourPeriod(DEFAULT_POUR_PERIOD),
 	_pinWaterPump(HEAD_WATER_PUMP_PIN), _pinLights(HEAD_LIGHT_PIN),
 	_pinBrightness(HEAD_BRIGHTNESS_PIN), _pinHumidity(HEAD_HUMIDITY_PIN),
-	_humidityValue(0), _brightnessValue(0), _temperatureValue(0)
+	_humidityValue(0), _brightnessValue(0), _temperatureValue(0), _probeCounter(1)
 {
 	_stepper = new AccelStepper(HEAD_STEPPER_TYPE, HEAD_STEPPER_PIN1, HEAD_STEPPER_PIN2);
 }
@@ -95,10 +95,14 @@ bool HerbyHead::checkHumidity() {
 	}
 	else {
 		if ( (_now - _timer) <= _humidityPeriod )  {
-//			TODO: real pouring
+			int newProbe = analogRead(_pinHumidity);
+			float newMean = _humidityValue + ( newProbe - _humidityValue ) / _probeCounter;
+			_humidityValue = ( int ) newMean;
+			_probeCounter++;
 			return true;
 		}
 		else {
+			_probeCounter = 1;
 			_timerStarted = false;
 			return false;
 		}
@@ -108,7 +112,28 @@ bool HerbyHead::checkHumidity() {
 }
 
 bool HerbyHead::checkBrightness() {
-	return false;
+
+	if(!_timerStarted) {
+			_timer = millis();
+			_timerStarted = true;
+		}
+		else {
+			if ( (_now - _timer) <= _brightnessPeriod )  {
+
+				int newProbe = analogRead(_pinBrightness);
+				float newMean = _brightnessValue + ( newProbe - _brightnessValue ) / _probeCounter;
+				_brightnessValue = ( int ) newMean;
+				_probeCounter++;
+
+				return true;
+			}
+			else {
+				_probeCounter = 1;
+				_timerStarted = false;
+				return false;
+			}
+		}
+	return true;
 }
 
 bool HerbyHead::pour() {
@@ -172,18 +197,28 @@ bool HerbyHead::doWork() {
 	switch(_state) {
 		case IDLE:
 			_finished = false;
-			_state = HUMIDITY_CHECK;
-			break;
-		case HUMIDITY_CHECK:
-			if (!checkHumidity()) _state = DRILL_IN;
+			resetValues();
 			setDrillTarget(3);
+			_state = DRILL_IN;
 			break;
 		case DRILL_IN:
-			if(!drillToTarget()) _state = POUR;
+			if(!drillToTarget()) _state = HUMIDITY_CHECK;
+			break;
+		case HUMIDITY_CHECK:
+			if (!checkHumidity()) _state = BRIGHTNESS_CHECK;
+			break;
+		case BRIGHTNESS_CHECK:
+			if (!checkBrightness()){
+				toggleLight();
+				_state = POUR;
+			}
 			break;
 		case POUR:
-			if (!pour()) _state = DRILL_OUT;
-			setDrillTarget(0);
+			if (!pour()){
+				toggleLight();
+				setDrillTarget(0);
+				_state = DRILL_OUT;
+			}
 			break;
 		case DRILL_OUT:
 			if(!drillToTarget()){

@@ -65,6 +65,7 @@ class HerbyHead
 		uint16_t _humidityValue;
 		uint16_t _brightnessValue;
 		uint16_t _temperatureValue;
+		uint16_t _probeCounter;
 
 		bool checkHumidity();
 		bool checkBrightness();
