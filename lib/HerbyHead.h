@@ -47,6 +47,7 @@ class HerbyHead
 		states _state;
 		bool _finished;
 		bool _timerStarted;
+		bool _lightOn;
 		AccelStepper* _stepper;
 
 		unsigned long _now;

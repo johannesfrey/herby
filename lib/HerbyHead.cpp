@@ -8,7 +8,7 @@
 #include "HerbyHead.h"
 
 HerbyHead::HerbyHead() :
-	_state(IDLE), _finished(false), _timerStarted(false), _stepper(0), _now(0), _timer(0),
+	_state(IDLE), _finished(false), _timerStarted(false),_lightOn(false), _stepper(0), _now(0), _timer(0),
 	_humidityPeriod(DEFAULT_HUMIDITY_PERIOD), _brightnessPeriod(DEFAULT_LIGHT_PERIOD),
 	_temperaturePeriod(DEFAULT_TEMPERATURE_PERIOD), _pourPeriod(DEFAULT_POUR_PERIOD),
 	_pinWaterPump(HEAD_WATER_PUMP_PIN), _pinLights(HEAD_LIGHT_PIN),
@@ -85,6 +85,7 @@ void HerbyHead::begin() {
 void HerbyHead::resetValues() {
 	_humidityValue = 0;
 	_brightnessValue = 0;
+	_temperatureValue = 0;
 }
 
 bool HerbyHead::checkHumidity() {
@@ -117,10 +118,11 @@ bool HerbyHead::pour() {
 	}
 	else {
 		if ( (_now - _timer) <= _pourPeriod )  {
-//			TODO: real pouring
+			digitalWrite(_pinWaterPump,HIGH);
 			return true;
 		}
 		else {
+			digitalWrite(_pinWaterPump,LOW);
 			_timerStarted = false;
 			return false;
 		}
@@ -142,7 +144,13 @@ bool HerbyHead::drillToTarget() {
 }
 
 void HerbyHead::toggleLight() {
-
+		if(_lightOn){
+			digitalWrite(_pinLights,LOW);
+			_lightOn = false;
+			return;
+		}
+		digitalWrite(_pinLights,HIGH);
+		_lightOn = true;
 }
 
 int HerbyHead::getHumidity() const {
