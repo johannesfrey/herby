@@ -89,6 +89,7 @@ void HerbyHead::resetValues() {
 }
 
 bool HerbyHead::checkHumidity() {
+
 	if(!_timerStarted) {
 		_timer = millis();
 		_timerStarted = true;

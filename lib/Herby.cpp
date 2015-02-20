@@ -91,13 +91,13 @@ void Herby::begin() {
 
 void Herby::activateTimer1() {
 	// Set up Timer1 for stepper
-	TCCR1A = 0;
-	TCCR1B = 0;
-	TCNT1 = 0;
+	TCCR1A = 0;							// set normal port operation
+	TCCR1B = 0;							// stop Timer1
+	TCNT1 = 0;							// set Timer1 Counter to 0
 
-	TCCR1B = bit(WGM12) | bit(CS12);
-	OCR1A = 1;
-	TIMSK1 = bit(OCIE1A);
+	TCCR1B = bit(WGM12) | bit(CS12);	// set CTC mode, set Prescale to 256
+	OCR1A = 1;							// set OutputCompareRegister1A to 1
+	TIMSK1 = bit(OCIE1A);				// set CompareMatch for interrupt
 
 }
 
@@ -109,7 +109,7 @@ bool Herby::runAxisMotors() {
 	_stepperMoving = _axisStepper->distanceToGo() == 0 ? false : true;
 	_now = millis();
 
-// Move DC over period
+	// Move DC over period
 	if ( (_now - _timerDC) <= _periodDC) {
 		// TODO: refactor DC to run()
 		_axisDC->move();
@@ -156,11 +156,15 @@ void Herby::setGridTarget(int posStepper, int posDC) {
 
 void Herby::setGridTargetAuto() {
 
+	// first setGridTarget to last computed AutoPositions
 	setGridTarget(_posStepperAuto, _posDCAuto);
+
+	// compute next AutoPositions
 	_posDCAuto += _stepsDC;
 
+
 	if (_posDCAuto > AXIS_DC_GRID_STEPS || _posDCAuto < 0) {
-		_stepsDC *= -1;
+		_stepsDC *= -1; 						// when on max or min Pos invert direction
 		_posStepperAuto += _stepsStepper;
 
 		if (_posDCAuto > AXIS_DC_GRID_STEPS)
@@ -170,11 +174,10 @@ void Herby::setGridTargetAuto() {
 	}
 
 	if (_posStepperAuto > AXIS_STEPPER_GRID_STEPS || _posStepperAuto < 0) {
-		_stepsStepper *= -1;
-//			posDCMotor += stepsDCMotor;
+		_stepsStepper *= -1;					// when on max or min Pos invert direction
 
 		if (_posStepperAuto > AXIS_STEPPER_GRID_STEPS)
-			_posStepperAuto = 3;
+			_posStepperAuto = AXIS_STEPPER_GRID_STEPS;
 		else
 			_posStepperAuto = 1;
 	}

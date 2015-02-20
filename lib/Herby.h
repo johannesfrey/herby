@@ -22,43 +22,43 @@ class Herby
 	public:
 	  Herby();
 
-	  Herby& createStepper(int type, int pin1, int pin2);
-	  Herby& createDC(int pin1, int pin2, int speedPin);
-	  Herby& initI2C(byte masterAddress, byte ownAddress);
-	  Herby& addHead(HerbyHead* head);
-	  Herby& addParser(HerbyProtocolParser* parser);
+	  Herby& createStepper(int type, int pin1, int pin2);			// delete default Stepper and add CustomStepper
+	  Herby& createDC(int pin1, int pin2, int speedPin);			// delete default DC-Motor and add CustomDC
+	  Herby& initI2C(byte masterAddress, byte ownAddress);			// overwrite default I2C Addresses with CustomAddresses
+	  Herby& addHead(HerbyHead* head);								// add HerbyHead instance
+	  Herby& addParser(HerbyProtocolParser* parser);				// add HerbyProtocolParser instance
 
-	  void begin();
-	  void update();
-	  void runStepper();
+	  void begin();				// put all left init code needed here and call as final method in the main setup
+	  void update();			// ONLY CALL THIS IN MAIN LOOP, update Herby in every loop, controlling StateMachine.
+	  void runStepper();		// Call this in ISR of Timer activated with activateTimer1()
 
 	private:
-	  typedef enum { IDLE, INTERRUPTED, AUTOMATIC, MOVE, WORK, COLLECTING_DATA, SENDING_DATA } states;
+	  typedef enum { IDLE, INTERRUPTED, AUTOMATIC, MOVE, WORK, COLLECTING_DATA, SENDING_DATA } states; 	//States of Main-Herby
 
-	  void activateTimer1();
+	  void activateTimer1();				// set HW-Timer for AxelStepper
 
-	  void resetStateData();
-	  void collectData();
+	  void resetStateData();				// set all stateData struct member to 0 or false
+	  void collectData();					// get all Data from HearbyHead and write to stateData
 
-	  void setGridTarget(int posStepper, int posDC);
-	  void setGridTargetAuto();
-	  bool runAxisMotors();
+	  void setGridTarget(int posStepper, int posDC);	// set new TargetPosition in Grid
+	  void setGridTargetAuto();							// new TargetPostion set by an automatic routine
+	  bool runAxisMotors();								// run AxisMotors while in MOVE state. Mainly needed for DC to move. Checks also if Stepper is finished
 
-	  bool sendData();
-	  static void receiveData(int howMany);
+	  bool sendData();									// send current stateData to I2C-Master
+	  static void receiveData(int howMany);				// called when I2C Interrupt occurs
 
-	  byte _masterAddress;
-	  byte _ownAddress;
+	  byte _masterAddress;					// I2C Adress of Master
+	  byte _ownAddress;						// Own I2C Adress
 
-	  stateData _stateData;
+	  stateData _stateData;					// struct for Sensor Data Exchange
 
-	  HerbyHead* _head;
-	  static HerbyProtocolParser* _parser;
-	  DCMotor* _axisDC;
-	  AccelStepper* _axisStepper;
+	  HerbyHead* _head;							// Pointer for HerbyHead instance
+	  static HerbyProtocolParser* _parser;		// Pointer for HerbyProtocolParser instance
+	  DCMotor* _axisDC;							// Pointer for Axis-DCMotor
+	  AccelStepper* _axisStepper;				// Pointer for AxisAccelStepper
 
 	  static volatile bool _interrupted;	// flag for signalizing incoming I2C message
-	  bool _motorsSetUp;			// check if new positions for the motors are set up
+	  bool _motorsSetUp;					// check if new positions for the motors are set up
 	  bool _dcMoving;
 	  bool _stepperMoving;
 

@@ -10,15 +10,15 @@
 
 #include <Arduino.h>
 
-// START AND END PATTERNS
+// START PATTERN
 
 #define START_PATTERN			0xc5
 
 //// COMMANDS
-// Movement from 0x10 to 0x1F;
+// Movement range from 0x10 to 0x1F;
 #define MOVE_TO_POINT			0x10
 
-// Head commands from 0x22
+// Head commands range from 0x22 to 0x8F;
 #define HUMIDITY				0x20
 #define WATERPUMP_ON			0x27
 
@@ -28,6 +28,7 @@
 #define TEMPERATURE				0x40
 
 
+// struct for exchange sensor Data etc.
 struct stateData {
 	uint8_t gridPosStepper;
 	uint8_t gridPosDC;

@@ -8,6 +8,7 @@
 #ifndef HERBYCONFIG_H_
 #define HERBYCONFIG_H_
 
+// All default pins are set here. You can change them here or use the "createXYZ" methods to set custom pins.
 enum pins {
 	AXIS_STEPPER_PIN1 = 5,
 	AXIS_STEPPER_PIN2 = 4,
@@ -23,6 +24,7 @@ enum pins {
 	HEAD_TEMPERATURE_PIN = A2
 };
 
+// All default configuration is done here.
 enum config_values {
 	I2C_OWN_ADDRESS = 8,
 	I2C_MASTER_ADDRESS = 9,

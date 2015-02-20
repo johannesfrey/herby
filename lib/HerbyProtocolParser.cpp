@@ -17,18 +17,22 @@ bool HerbyProtocolParser::fillReceiveBuffer(int howMany) {
 	return validate();
 }
 
+
 bool HerbyProtocolParser::validate() {
+
 	uint8_t startByte = _receiveBuffer[0];
 
-	if  (startByte != START_PATTERN) return false;
+	if  (startByte != START_PATTERN) return false; // check for valid StartPattern
 
 	uint8_t length = _receiveBuffer[1];
 	uint8_t parityCheck = _receiveBuffer[0];
 
+	//	do XOR of receiveBuffer[0->lenght-1] and compare to parity bit.
 	for (int i = 1; i < length-1; i++) {
 		parityCheck ^= _receiveBuffer[i];
 	}
 
+	// compare computed parityCheck to parityByte in receiveBuffer
 	if (parityCheck != _receiveBuffer[length - 1]) return false;
 
 	return true;
@@ -98,8 +102,8 @@ void HerbyProtocolParser::insert(stateData& stateData) {
 	int length = cmdCounter + 3;			// last three static bytes in protocol
 
 	_sendBuffer[1] = length;
-	_sendBuffer[length - 2] = 0x00;			// future use
-	_sendBuffer[length - 3] = 0x00;			// future use
+	_sendBuffer[length - 2] = 0x00;			// future use Byte
+	_sendBuffer[length - 3] = 0x00;			// future use Byte
 
 	uint8_t parity = _sendBuffer[0];
 	for (int i = 1; i<length-1; i++){
