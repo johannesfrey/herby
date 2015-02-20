@@ -20,6 +20,8 @@ ISR(TIMER1_COMPA_vect)
 }
 
 void setup() {
+	Serial.begin(9600);
+
 	herbyHead.createStepper(HEAD_STEPPER_TYPE, HEAD_STEPPER_PIN1, HEAD_STEPPER_PIN2)
 			 .createWaterPump(HEAD_WATER_PUMP_PIN)
 			 .createHumidity(HEAD_HUMIDITY_PIN)

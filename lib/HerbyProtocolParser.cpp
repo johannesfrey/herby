@@ -13,6 +13,7 @@ HerbyProtocolParser::HerbyProtocolParser()
 bool HerbyProtocolParser::fillReceiveBuffer(int howMany) {
 	for (int i = 0; i < howMany; i++) {
 		_receiveBuffer[i] = Wire.read();
+		Serial.println(_receiveBuffer[i], HEX);
 	}
 	return validate();
 }

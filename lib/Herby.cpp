@@ -15,8 +15,13 @@ void Herby::receiveData(int howMany) {
 	if (_interrupted) return;
 
 	if(_parser->fillReceiveBuffer(howMany)) {
+		Serial.println("Successfull interrupted!");
 		_interrupted = true;
 	}
+}
+
+void Herby::requestData() {
+//	TODO
 }
 
 Herby::Herby() :

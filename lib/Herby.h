@@ -46,6 +46,7 @@ class Herby
 
 	  bool sendData();
 	  static void receiveData(int howMany);
+	  static void requestData();
 
 	  byte _masterAddress;
 	  byte _ownAddress;

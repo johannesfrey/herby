@@ -199,6 +199,7 @@ bool HerbyHead::doWork() {
 			_finished = false;
 			resetValues();
 			setDrillTarget(3);
+			toggleLight();
 			_state = DRILL_IN;
 			break;
 		case DRILL_IN:
@@ -209,13 +210,11 @@ bool HerbyHead::doWork() {
 			break;
 		case BRIGHTNESS_CHECK:
 			if (!checkBrightness()){
-				toggleLight();
 				_state = POUR;
 			}
 			break;
 		case POUR:
 			if (!pour()){
-				toggleLight();
 				setDrillTarget(0);
 				_state = DRILL_OUT;
 			}
@@ -223,6 +222,7 @@ bool HerbyHead::doWork() {
 		case DRILL_OUT:
 			if(!drillToTarget()){
 				_finished = true;
+				toggleLight();
 				_state = IDLE;
 			}
 			break;
