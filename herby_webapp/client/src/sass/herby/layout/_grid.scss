@@ -1,0 +1,38 @@
+.herby-grid {
+  @include grid-column(12);
+  padding: rem-calc(20px) 0 rem-calc(20px) 0;
+  cursor: pointer;
+
+  .herby-grid-row {
+    @include grid-row();
+
+    .herby-grid-cell {
+      @include grid-column(4);
+    }
+
+    &.odd {
+      .herby-grid-cell {
+        &:nth-child(even) {
+          background: #b9b9ba;
+        }
+
+        &:nth-child(odd) {
+          background: #e1e5e7;
+        }
+      }
+    }
+
+    &.even {
+      .herby-grid-cell {
+        &:nth-child(even) {
+          background: #e1e5e7;
+        }
+
+        &:nth-child(odd) {
+          background: #b9b9ba;
+        }
+      }
+    }
+
+  }
+}

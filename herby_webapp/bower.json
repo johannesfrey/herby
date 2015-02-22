@@ -1,0 +1,9 @@
+{
+  "name": "herby-webapp",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "foundation": "~5.5.0"
+  }
+}

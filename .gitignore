@@ -19,6 +19,9 @@ local.properties
 #nodemodules
 herby_webapp/node_modules/
 
+#bower
+herby_webapp/bower_components/
+
 # External tool builders
 .externalToolBuilders/
 
