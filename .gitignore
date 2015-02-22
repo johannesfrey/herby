@@ -16,6 +16,9 @@ local.properties
 .settings/
 .loadpath
 
+#nodemodules
+herby_webapp/node_modules/
+
 # External tool builders
 .externalToolBuilders/
 
